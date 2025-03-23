@@ -737,8 +737,9 @@ class TransformerDecoder(FairseqIncrementalDecoder):
         self.output_projection = output_projection
         if self.output_projection is None:
             self.build_output_projection(args, dictionary, embed_tokens)
-        
-        
+
+
+
         def get_slopes(n):
             def get_slopes_power_of_2(n):
                 start = (2**(-2**-(math.log2(n)-3)))
@@ -756,8 +757,9 @@ class TransformerDecoder(FairseqIncrementalDecoder):
         self.slopes = torch.Tensor(get_slopes(attn_heads))
         #In the next line, the part after the * is what constructs the diagonal matrix (right matrix in Figure 3 in the paper). 
         #If you run it you'll see that it doesn't exactly print out the same matrix as we have in Figure 3, but one where all rows are identical.
-        #This works because the softmax operation is invariant to translation, and our bias functions are always linear. 
-        self.alibi = self.slopes.unsqueeze(1).unsqueeze(1) * torch.arange(maxpos).unsqueeze(0).unsqueeze(0).expand(attn_heads, -1, -1)
+        #This works because the softmax operation is invariant to translation, and our bias functions are always linear.
+        mapped_positions = torch.log1p(torch.arange(maxpos).float())
+        self.alibi = self.slopes.unsqueeze(1).unsqueeze(1) * mapped_positions.unsqueeze(0).unsqueeze(0).expand(attn_heads, -1, -1)
         self.alibi = self.alibi.view(attn_heads, 1, maxpos)
         self.alibi = self.alibi.repeat(args.max_tokens//maxpos, 1, 1)  # batch_size, 1, 1
 
