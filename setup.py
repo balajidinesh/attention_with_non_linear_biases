@@ -24,7 +24,7 @@ def write_version_py():
     try:
         sha = (
             subprocess.check_output(["git", "rev-parse", "HEAD"])
-            .decode("ascii")
+            .decode()
             .strip()
         )
         version += "+" + sha[:7]
@@ -34,13 +34,14 @@ def write_version_py():
     # write version info to fairseq/version.py
     with open(os.path.join("fairseq", "version.py"), "w") as f:
         f.write('__version__ = "{}"\n'.format(version))
+        f.write('__version__ = "{}"\n'.format(version))
     return version
 
 
 version = write_version_py()
 
 
-with open("README.md") as f:
+with open("README.md", encoding="utf-8") as f:
     readme = f.read()
 
 
