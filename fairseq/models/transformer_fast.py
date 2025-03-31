@@ -15,7 +15,7 @@ from fairseq.models import (
     register_model_architecture,
 )
 from fairseq.models.transformer import (
-    DEFAULT_MIN_PARAMS_TO_WRAP, Embedding, TransformerDecoder
+    DEFAULT_MIN_PARAMS_TO_WRAP, Embedding, TransformerFastDecoder
 )
 from fairseq.modules import AdaptiveInput, CharacterTokenEmbedder
 from omegaconf import II
@@ -286,7 +286,7 @@ class FastTransformerLanguageModel(FairseqLanguageModel):
             assert args.decoder_input_dim == args.decoder_output_dim
 
         #  todo modify decoder
-        decoder = TransformerDecoder(
+        decoder = TransformerFastDecoder(
             args, task.target_dictionary, embed_tokens, no_encoder_attn=True
         )
         return cls(decoder)
